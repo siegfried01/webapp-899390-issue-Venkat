@@ -1,0 +1,85 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appplanName":{
+            "type": "string"
+        },
+        "location":{
+            "type": "string"
+        },
+        "appname":{
+            "type": "string"
+        }
+    },
+    "functions": [],
+    "variables": {},
+    "resources": [
+        {
+            "name": "[parameters('appplanName')]",
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2020-12-01",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "F1",
+                "capacity": 1
+            },
+            "tags": {
+                "displayName": "[parameters('appplanName')]"
+            },
+            "properties": {
+                "name": "[parameters('appplanName')]"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2021-03-01",
+            "name":"[parameters('appname')]",
+            "location":"[parameters('location')]",
+            "dependsOn":[
+                "[resourceId('Microsoft.Web/serverfarms', parameters('appplanName'))]"
+            ],
+            "properties": {
+                "serverFarmId":"[parameters('appplanName')]",
+                "siteConfig": {
+                    "webSocketsEnabled": true,
+                    "netFrameworkVersion":"v6.0",
+                    "metadata":[
+                        {
+                            "name":"CURRENT_STACK",
+                            "value": "dotnet"
+                        }
+                    ]
+                },
+                "httpsOnly": true
+                
+            },
+            "resources": [
+                {
+                    "type": "sourcecontrols",
+                    "apiVersion": "2021-03-01",
+                    "location":"[parameters('location')]",
+                    "name": "web",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', parameters('appname'))]"
+                    ],
+                    "properties": {
+                        "repoUrl":"https://github.com/***/",      #githublink
+                        "branch":"main",
+                       // "isManualIntegration": true,
+                        "gitHubActionConfiguration":{
+                            "codeConfiguration": {
+                                "runtimeVersion":"6.0",
+                                "runtimeStack": "DOTNET"
+                            },
+                           "generateWorkflowFile": true
+                        },
+                        "isGitHubAction": true
+                        
+                    }
+                }
+            ]
+       }
+    ],
+    "outputs": {}
+}
