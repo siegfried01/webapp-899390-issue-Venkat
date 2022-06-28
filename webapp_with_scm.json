@@ -64,7 +64,7 @@
                         "[resourceId('Microsoft.Web/sites', parameters('appname'))]"
                     ],
                     "properties": {
-                        "repoUrl":"https://github.com/***/",      #githublink
+                        "repoUrl":"https://github.com/siegfried01/SourceControlsAzureBicepDemo02.git",      #githublink
                         "branch":"main",
                        // "isManualIntegration": true,
                         "gitHubActionConfiguration":{
